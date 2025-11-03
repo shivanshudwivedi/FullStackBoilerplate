@@ -1,0 +1,7 @@
+[build]
+# tell Railway to build using the backend folder
+root = "backend"
+
+[deploy]
+# specify how to start the server
+startCommand = "uvicorn main:app --host 0.0.0.0 --port $PORT"
