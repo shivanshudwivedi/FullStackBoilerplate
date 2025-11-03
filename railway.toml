@@ -1,7 +1,6 @@
 [build]
-# tell Railway to build using the backend folder
-root = "backend"
+builder = "python"
 
 [deploy]
-# specify how to start the server
-startCommand = "uvicorn main:app --host 0.0.0.0 --port $PORT"
+# Move into the backend folder and run uvicorn
+startCommand = "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
