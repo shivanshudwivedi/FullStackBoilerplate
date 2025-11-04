@@ -1,7 +1,7 @@
 'use client';
 
 import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../lib/api';
 
 interface DiffViewerProps {
@@ -13,41 +13,48 @@ interface DiffViewerProps {
 }
 
 const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, splitView = true, onComment }) => {
-  const [selection, setSelection] = useState<{ start: number; end: number } | null>(null);
+  const [selectedText, setSelectedText] = useState('');
   const [showAIModal, setShowAIModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiResult, setAiResult] = useState('');
   const [manualComment, setManualComment] = useState('');
+  const [lineStart, setLineStart] = useState(1);
+  const [lineEnd, setLineEnd] = useState(1);
 
-  const handleLineNumberClick = (lineNumber: number) => {
-    if (!selection) {
-      setSelection({ start: lineNumber, end: lineNumber });
-    } else {
-      const newSelection = {
-        start: Math.min(selection.start, lineNumber),
-        end: Math.max(selection.end, lineNumber),
-      };
-      setSelection(newSelection);
-    }
+  const handleAddCommentClick = () => {
+    setLineStart(1);
+    setLineEnd(1);
+    setManualComment('');
+    setShowCommentModal(true);
   };
 
-  const getSelectedCode = () => {
-    if (!selection) return '';
-    const lines = newCode.split('\n');
-    return lines.slice(selection.start - 1, selection.end).join('\n');
-  };
+  useEffect(() => {
+    const handleMouseUp = () => {
+      const selection = window.getSelection();
+      const text = selection ? selection.toString().trim() : '';
+      if (text) {
+        setSelectedText(text);
+      } else {
+        setSelectedText('');
+      }
+    };
+
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
 
   const generateAIComment = async () => {
-    const codeBlock = getSelectedCode();
-    if (!codeBlock || !aiPrompt) return;
+    if (!selectedText || !aiPrompt) return;
 
     setAiLoading(true);
     setAiResult('');
     try {
       const response = await api.post('/ai/generate-comment', {
-        code_block: codeBlock,
+        code_block: selectedText,
         prompt: aiPrompt,
       });
       setAiResult(response.data.comment);
@@ -57,58 +64,45 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, spl
       setAiLoading(false);
     }
   };
-  
+
   const handleSaveComment = () => {
-    if (!manualComment || !selection) return;
+    if (!manualComment) return;
+    const start = Math.max(1, Number(lineStart));
+    const end = Math.max(start, Number(lineEnd));
+
     onComment({
       file_path: filename,
-      line_start: selection.start,
-      line_end: selection.end,
+      line_start: start,
+      line_end: end,
       body_md: manualComment,
     });
+
     setManualComment('');
+    setLineStart(1);
+    setLineEnd(1);
     setShowCommentModal(false);
-    setSelection(null);
   };
 
-  const renderGutter = (lineNumber: number) => {
-    const isSelected = selection && lineNumber >= selection.start && lineNumber <= selection.end;
-    return (
-      <div
-        onClick={() => handleLineNumberClick(lineNumber)}
-        style={{
-          cursor: 'pointer',
-          padding: '0 10px',
-          backgroundColor: isSelected ? '#a2d2ff' : 'transparent',
-        }}
-      >
-        {lineNumber}
-      </div>
-    );
-  };
-  
   return (
     <div className="diff-viewer-container">
-      {selection && (
-        <div className="ai-toolbar">
-          <span>Selected lines: {selection.start} - {selection.end}</span>
-          <button onClick={() => setShowCommentModal(true)} className="btn btn-sm btn-secondary">
-            Add Comment
-          </button>
-          <button onClick={() => setShowAIModal(true)} className="btn btn-sm btn-primary">
-            AI Comment
-          </button>
-          <button onClick={() => setSelection(null)} className="btn btn-sm btn-secondary">
-            Clear
-          </button>
-        </div>
-      )}
+      <div className="toolbar">
+        <button onClick={handleAddCommentClick} className="btn btn-sm btn-secondary">
+          Add Comment
+        </button>
+        <div className="toolbar-spacer" />
+        <button
+          onClick={() => setShowAIModal(true)}
+          className="btn btn-sm btn-primary"
+          disabled={!selectedText}
+        >
+          AI Comment
+        </button>
+      </div>
       <ReactDiffViewer
         oldValue={oldCode}
         newValue={newCode}
         splitView={splitView}
         compareMethod={DiffMethod.WORDS}
-        renderGutter={(props: any) => renderGutter(props.lineNumber)}
         styles={{
           variables: {
             light: {
@@ -133,6 +127,7 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, spl
           },
         }}
       />
+
       {showCommentModal && (
         <div className="modal-overlay" onClick={() => setShowCommentModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -140,13 +135,35 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, spl
               <h2>Add Comment</h2>
             </div>
             <div className="modal-body">
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Line Start</label>
+                  <input
+                    type="number"
+                    min={1}
+                    className="form-input"
+                    value={lineStart}
+                    onChange={(e) => setLineStart(Number(e.target.value))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Line End</label>
+                  <input
+                    type="number"
+                    min={lineStart}
+                    className="form-input"
+                    value={lineEnd}
+                    onChange={(e) => setLineEnd(Number(e.target.value))}
+                  />
+                </div>
+              </div>
               <div className="form-group">
                 <label className="form-label">Comment (Markdown supported)</label>
                 <textarea
                   className="form-textarea"
                   value={manualComment}
                   onChange={(e) => setManualComment(e.target.value)}
-                  rows={5}
+                  rows={6}
                 />
               </div>
             </div>
@@ -154,13 +171,14 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, spl
               <button onClick={() => setShowCommentModal(false)} className="btn btn-secondary">
                 Cancel
               </button>
-              <button onClick={handleSaveComment} className="btn btn-primary">
+              <button onClick={handleSaveComment} className="btn btn-primary" disabled={!manualComment.trim()}>
                 Save Comment
               </button>
             </div>
           </div>
         </div>
       )}
+
       {showAIModal && (
         <div className="modal-overlay" onClick={() => setShowAIModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -179,7 +197,11 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, spl
                 />
               </div>
               <div className="code-preview">
-                <pre><code>{getSelectedCode()}</code></pre>
+                {selectedText ? (
+                  <pre><code>{selectedText}</code></pre>
+                ) : (
+                  <p className="text-muted">Select code in the diff above to enable AI comments.</p>
+                )}
               </div>
               {aiResult && (
                 <div className="ai-result">
@@ -191,21 +213,23 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, spl
               <button onClick={() => setShowAIModal(false)} className="btn btn-secondary">
                 Close
               </button>
-              <button onClick={generateAIComment} className="btn btn-primary" disabled={aiLoading}>
+              <button onClick={generateAIComment} className="btn btn-primary" disabled={aiLoading || !selectedText || !aiPrompt.trim()}>
                 {aiLoading ? 'Generating...' : 'Generate'}
               </button>
             </div>
           </div>
         </div>
       )}
+
       <style jsx>{`
-        .ai-toolbar {
-          background-color: #f1f8ff;
-          padding: 8px 12px;
-          border-bottom: 1px solid #ddd;
+        .toolbar {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: var(--spacing-sm);
+          margin-bottom: var(--spacing-md);
+        }
+        .toolbar-spacer {
+          flex: 1;
         }
         .code-preview {
           background-color: #f7f7f7;
@@ -220,6 +244,16 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, spl
           padding: 15px;
           background-color: #f0f8ff;
           border: 1px solid #b0d8ff;
+        }
+        .form-row {
+          display: flex;
+          gap: var(--spacing-md);
+          margin-bottom: var(--spacing-md);
+        }
+        @media (max-width: 768px) {
+          .form-row {
+            flex-direction: column;
+          }
         }
       `}</style>
     </div>
