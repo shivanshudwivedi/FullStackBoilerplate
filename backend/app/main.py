@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routes import assessments, candidate, review, followup, settings
 
-app = FastAPI()
+app = FastAPI(title="Backend API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -12,12 +12,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(assessments.router)
-app.include_router(candidate.router)
-app.include_router(review.router)
-app.include_router(followup.router)
-app.include_router(settings.router)
+app.include_router(assessments.router, prefix="/api")
+app.include_router(candidate.router, prefix="/api")
+app.include_router(review.router, prefix="/api")
+app.include_router(followup.router, prefix="/api")
+app.include_router(settings.router, prefix="/api")
 
 @app.get("/")
-def read_root():
+def root():
     return {"message": "AfterQuery Assessment API"}
