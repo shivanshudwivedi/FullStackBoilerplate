@@ -1,8 +1,8 @@
 # AfterQuery Interview Platform
 
--- **Live App (Demo):** https://full-stack-boilerplate-rho.vercel.app/
--- **Live Backend (Demo):** https://fullstackboilerplate-production.up.railway.app
--- **Demo Video:** [Link to your demo video]
+- **Live App (Demo):** https://full-stack-boilerplate-rho.vercel.app/
+- **Live Backend (Demo):** https://fullstackboilerplate-production.up.railway.app
+- **Demo Video:** [Link to your demo video]
 
 ---
 
