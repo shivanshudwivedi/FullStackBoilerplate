@@ -221,6 +221,22 @@ class DatabaseService:
         except Exception as e:
             raise Exception(f"Failed to list comments: {str(e)}")
     
+    def get_dashboard_stats(self):
+        """Retrieves data from the dashboard_stats view."""
+        return self.db.from_('dashboard_stats').select('*').single().execute().data
+
+    def get_candidate_funnel(self):
+        """Retrieves data from the candidate_funnel view."""
+        return self.db.from_('candidate_funnel').select('*').execute().data
+
+    def get_assessment_performance(self):
+        """Retrieves data from the assessment_performance view."""
+        return self.db.from_('assessment_performance').select('*').execute().data
+
+    def get_candidate_leaderboard(self):
+        """Retrieves data from the candidate_leaderboard view."""
+        return self.db.from_('candidate_leaderboard').select('*').execute().data
+
     # ==================== EVENTS ====================
     
     def create_event(self, event_data: Dict) -> str:

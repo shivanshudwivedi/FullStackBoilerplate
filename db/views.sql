@@ -211,3 +211,56 @@ select
   (select avg(stack_rank_score) from reviews where stack_rank_score is not null) as avg_score,
   (select count(*) from events where created_at >= now() - interval '24 hours') as events_last_24h;
 
+-- Dashboard Analytics Views
+
+DROP VIEW IF EXISTS dashboard_stats;
+CREATE VIEW dashboard_stats AS
+SELECT
+    (SELECT COUNT(*) FROM assessments) AS total_assessments,
+    (SELECT COUNT(*) FROM candidates) AS total_candidates,
+    COALESCE(AVG(r.stack_rank_score), 0) AS average_score,
+    COALESCE(
+        (COUNT(CASE WHEN r.stack_rank_score >= 70 THEN 1 END) * 100.0) / NULLIF(COUNT(r.id), 0),
+        0
+    ) AS pass_rate
+FROM reviews r;
+
+DROP VIEW IF EXISTS candidate_funnel;
+CREATE VIEW candidate_funnel AS
+SELECT 'Invited' AS stage, COUNT(*) AS count FROM candidate_assessments
+UNION ALL
+SELECT 'Started' AS stage, COUNT(*) AS count FROM candidate_assessments WHERE status = 'started' OR status = 'submitted'
+UNION ALL
+SELECT 'Submitted' AS stage, COUNT(*) AS count FROM candidate_assessments WHERE status = 'submitted'
+UNION ALL
+SELECT 'Passed' AS stage, COUNT(ca.id) AS count
+FROM candidate_assessments ca
+JOIN reviews r ON ca.id = r.candidate_assessment_id
+WHERE r.stack_rank_score >= 70;
+
+DROP VIEW IF EXISTS assessment_performance;
+CREATE VIEW assessment_performance AS
+SELECT
+    a.title,
+    COALESCE(AVG(r.stack_rank_score), 0) AS average_score
+FROM assessments a
+LEFT JOIN candidate_assessments ca ON a.id = ca.assessment_id
+LEFT JOIN reviews r ON ca.id = r.candidate_assessment_id
+GROUP BY a.title;
+
+DROP VIEW IF EXISTS candidate_leaderboard;
+CREATE VIEW candidate_leaderboard AS
+SELECT
+    c.name,
+    c.email,
+    a.title AS assessment_title,
+    r.stack_rank_score,
+    ca.status,
+    RANK() OVER (ORDER BY r.stack_rank_score DESC) as rank
+FROM candidates c
+JOIN candidate_assessments ca ON c.id = ca.candidate_id
+JOIN assessments a ON ca.assessment_id = a.id
+JOIN reviews r ON ca.id = r.candidate_assessment_id
+WHERE ca.status = 'submitted'
+ORDER BY r.stack_rank_score DESC;
+
