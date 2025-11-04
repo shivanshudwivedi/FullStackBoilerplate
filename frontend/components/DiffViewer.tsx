@@ -12,39 +12,26 @@ interface DiffViewerProps {
 }
 
 const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, splitView = true }) => {
-  const [selection, setSelection] = useState<{ start: number; end: number } | null>(null);
+  const [selectedText, setSelectedText] = useState('');
   const [showAIModal, setShowAIModal] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiResult, setAiResult] = useState('');
 
-  const handleLineNumberClick = (lineNumber: number) => {
-    if (!selection) {
-      setSelection({ start: lineNumber, end: lineNumber });
-    } else {
-      const newSelection = {
-        start: Math.min(selection.start, lineNumber),
-        end: Math.max(selection.end, lineNumber),
-      };
-      setSelection(newSelection);
-    }
-  };
-
-  const getSelectedCode = () => {
-    if (!selection) return '';
-    const lines = newCode.split('\n');
-    return lines.slice(selection.start - 1, selection.end).join('\n');
+  const handleMouseUp = () => {
+    const selection = window.getSelection();
+    const text = selection ? selection.toString().trim() : '';
+    setSelectedText(text);
   };
 
   const generateAIComment = async () => {
-    const codeBlock = getSelectedCode();
-    if (!codeBlock || !aiPrompt) return;
+    if (!selectedText || !aiPrompt) return;
 
     setAiLoading(true);
     setAiResult('');
     try {
       const response = await api.post('/ai/generate-comment', {
-        code_block: codeBlock,
+        code_block: selectedText,
         prompt: aiPrompt,
       });
       setAiResult(response.data.comment);
@@ -55,31 +42,15 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, spl
     }
   };
 
-  const renderGutter = (lineNumber: number) => {
-    const isSelected = selection && lineNumber >= selection.start && lineNumber <= selection.end;
-    return (
-      <div
-        onClick={() => handleLineNumberClick(lineNumber)}
-        style={{
-          cursor: 'pointer',
-          padding: '0 10px',
-          backgroundColor: isSelected ? '#a2d2ff' : 'transparent',
-        }}
-      >
-        {lineNumber}
-      </div>
-    );
-  };
-  
   return (
-    <div className="diff-viewer-container">
-      {selection && (
+    <div className="diff-viewer-container" onMouseUp={handleMouseUp}>
+      {selectedText && (
         <div className="ai-toolbar">
-          <span>Selected lines: {selection.start} - {selection.end}</span>
+          <span>Selected {selectedText.split('\n').length} line(s)</span>
           <button onClick={() => setShowAIModal(true)} className="btn btn-sm btn-primary">
             AI Comment
           </button>
-          <button onClick={() => setSelection(null)} className="btn btn-sm btn-secondary">
+          <button onClick={() => setSelectedText('')} className="btn btn-sm btn-secondary">
             Clear
           </button>
         </div>
@@ -89,7 +60,6 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, spl
         newValue={newCode}
         splitView={splitView}
         compareMethod={DiffMethod.WORDS}
-        renderGutter={(props: any) => renderGutter(props.lineNumber)}
         styles={{
           variables: {
             light: {
@@ -132,7 +102,7 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, spl
                 />
               </div>
               <div className="code-preview">
-                <pre><code>{getSelectedCode()}</code></pre>
+                <pre><code>{selectedText}</code></pre>
               </div>
               {aiResult && (
                 <div className="ai-result">
