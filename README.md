@@ -3,30 +3,32 @@
 - **Live App (Demo):** https://full-stack-boilerplate-rho.vercel.app/
 - **Live Backend (Demo):** https://fullstackboilerplate-production.up.railway.app
 - **Demo Video:** [Link to your demo video]
-
+- Use the following credentials for admin access : Email - shitanshri@gmail.com; Password: jaimatadi9
 ---
 
 ### Time & Availability
 
--- Hours spent on take-home: 10 hours
--- Weekly availability: 20 hours in-semester + more if project needs
--- Open to full-time: Yes
+- Hours spent on take-home: 10 hours
+- Weekly availability: 20 hours in-semester + more if project needs
+- Open to full-time: Yes
 
 ### Preferred Position
 
--- SWE Intern 
--- TPM Intern
--- (I love the mission of the company & ready to contribute in whatever manner possible)
+- SWE Intern 
+- TPM Intern
+- (I love the mission of the company & ready to contribute in whatever manner possible)
 
 ### Contact
 
-Name: Shivanshu Dwivedi
-Email: shitanshri@gmail.com
-Phone: +1-860-209-7055
-Linkedin: https://wwww.linkedin.com/in/shivanshudwivedi
-GitHub: https://wwww.github.com/shivanshudwivedi
+- Name: Shivanshu Dwivedi
+- Email: shitanshri@gmail.com
+- Phone: +1-860-209-7055
+- Linkedin: https://wwww.linkedin.com/in/shivanshudwivedi
+- GitHub: https://wwww.github.com/shivanshudwivedi
 
 ---
+
+## What I have built ?
 
 ## Description 
 
