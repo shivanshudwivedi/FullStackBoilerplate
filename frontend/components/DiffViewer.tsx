@@ -1,6 +1,6 @@
 'use client';
 
-import ReactDiffViewer, { DiffMethod, DiffViewerProps as ReactDiffViewerProps } from 'react-diff-viewer';
+import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
 import { useState } from 'react';
 import api from '../lib/api';
 
@@ -32,8 +32,8 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ oldCode, newCode, filename, spl
 
   const getSelectedCode = () => {
     if (!selection) return '';
-    const lines = newCode.split('\\n');
-    return lines.slice(selection.start - 1, selection.end).join('\\n');
+    const lines = newCode.split('\n');
+    return lines.slice(selection.start - 1, selection.end).join('\n');
   };
 
   const generateAIComment = async () => {
