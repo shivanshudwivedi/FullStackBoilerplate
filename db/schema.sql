@@ -185,6 +185,13 @@ create index if not exists idx_events_type on events(type);
 create index if not exists idx_events_created_at on events(created_at desc);
 create index if not exists idx_events_actor on events(actor_id);
 
+create table if not exists app_settings (
+  key text primary key,
+  value jsonb,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
 -- ============================================================================
 -- FUNCTIONS & TRIGGERS
 -- ============================================================================
@@ -218,6 +225,9 @@ create trigger update_reviews_updated_at before update on reviews
   for each row execute function update_updated_at_column();
 
 create trigger update_comments_updated_at before update on comments
+  for each row execute function update_updated_at_column();
+
+create trigger update_app_settings_updated_at before update on app_settings
   for each row execute function update_updated_at_column();
 
 -- Function to automatically create profile on user signup
@@ -378,6 +388,15 @@ create policy "admins_all_comments" on comments
 --       where candidate_id = get_current_candidate_id()
 --     )
 --   );
+
+-- ============================================================================
+-- APP_SETTINGS TABLE RLS
+-- ============================================================================
+alter table app_settings enable row level security;
+
+-- Admins have full access
+create policy "admins_all_app_settings" on app_settings
+  for all using (is_admin());
 
 -- ============================================================================
 -- EVENTS TABLE RLS

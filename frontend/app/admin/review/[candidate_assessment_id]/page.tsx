@@ -82,6 +82,18 @@ export default function ReviewPage({ params }: Props) {
     }
   };
 
+  const handleComment = async (comment: { file_path: string; line_start: number; line_end: number; body_md: string }) => {
+    try {
+      await api.post('/comments', {
+        candidate_assessment_id: params.candidate_assessment_id,
+        ...comment,
+      });
+      fetchReviewData(); // Refresh to show the new comment
+    } catch (err: any) {
+      alert(err.response?.data?.detail || 'Failed to post comment');
+    }
+  };
+
   if (loading) {
     return (
       <div className="container">
@@ -191,6 +203,7 @@ export default function ReviewPage({ params }: Props) {
                               oldCode={file.previous_content || ''}
                               newCode={file.content || ''}
                               filename={file.filename}
+                              onComment={handleComment}
                             />
                           </div>
                         )}
@@ -200,6 +213,27 @@ export default function ReviewPage({ params }: Props) {
                 </div>
               ) : (
                 <p className="text-muted">No changes detected</p>
+              )}
+            </div>
+
+            {/* Comments */}
+            <div className="card">
+              <h3>Comments</h3>
+              {data.comments && data.comments.length > 0 ? (
+                <div className="comments-list">
+                  {data.comments.map((comment: any) => (
+                    <div key={comment.id} className="comment-item">
+                      <div className="comment-header">
+                        <strong>{comment.file_path}</strong> (lines {comment.line_start}-{comment.line_end})
+                      </div>
+                      <div className="comment-body">
+                        <ReactMarkdown>{comment.body_md}</ReactMarkdown>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted">No comments yet.</p>
               )}
             </div>
 
@@ -409,6 +443,30 @@ export default function ReviewPage({ params }: Props) {
 
         .stat-del {
           color: var(--color-error);
+        }
+
+        .comments-list {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-lg);
+          margin-top: var(--spacing-lg);
+        }
+
+        .comment-item {
+          background: var(--color-bg-secondary);
+          border-radius: var(--radius-md);
+          padding: var(--spacing-md);
+        }
+
+        .comment-header {
+          font-family: var(--font-mono);
+          font-size: 0.875rem;
+          color: var(--color-text-secondary);
+          margin-bottom: var(--spacing-sm);
+        }
+
+        .comment-body {
+          line-height: 1.7;
         }
 
         .text-success {

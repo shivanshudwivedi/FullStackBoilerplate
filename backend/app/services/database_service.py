@@ -255,6 +255,14 @@ class DatabaseService:
         deadline = datetime.utcnow() + timedelta(hours=hours)
         return deadline.isoformat()
 
+    def get_setting(self, key: str):
+        """Retrieves a setting from the app_settings table."""
+        return self.db.table('app_settings').select('*').eq('key', key).single().execute().data
+
+    def set_setting(self, key: str, value: Any):
+        """Creates or updates a setting in the app_settings table."""
+        return self.db.table('app_settings').upsert({'key': key, 'value': value}).execute().data
+
 # Singleton instance
 database_service = DatabaseService()
 

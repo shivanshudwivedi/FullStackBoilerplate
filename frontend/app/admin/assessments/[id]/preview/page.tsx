@@ -117,6 +117,40 @@ export default function AssessmentPreviewPage({ params }: Props) {
             </button>
           </div>
         </div>
+
+        {/* Mock Started View */}
+        <div className="welcome-card" style={{ marginTop: 'var(--spacing-2xl)' }}>
+          <div className="instructions-section">
+            <h2>After Starting</h2>
+            <p className="text-muted">Below is a preview of the information a candidate will see after they start the assessment.</p>
+
+            <div className="repo-info-card" style={{ marginTop: 'var(--spacing-lg)' }}>
+              <h3>Your Repository</h3>
+              <div className="repo-details">
+                <div className="detail-row">
+                  <span className="detail-label">Repository:</span>
+                  <a href="#" onClick={(e) => e.preventDefault()} className="detail-value">
+                    acme-corp/candidate-name-assessment
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="instructions-card" style={{ marginTop: 'var(--spacing-lg)' }}>
+              <h3>Next Steps</h3>
+              <ol className="steps-list">
+                <li>Accept the collaborator invitation sent to your email.</li>
+                <li>Clone your repository:
+                  <div className="code-block">
+                    <code>git clone https://github.com/acme-corp/candidate-name-assessment.git</code>
+                  </div>
+                </li>
+                <li>Complete the assignment and push your changes.</li>
+                <li>Return to this page to submit your work.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
       </div>
 
       <style jsx>{`
@@ -232,6 +266,59 @@ export default function AssessmentPreviewPage({ params }: Props) {
         }
         .start-button {
           min-width: 250px;
+        }
+        .repo-info-card, .instructions-card {
+            background: white;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            text-align: left;
+        }
+        .repo-details {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 500;
+            color: var(--color-text-secondary);
+        }
+        .detail-value {
+            font-weight: 500;
+            color: var(--color-text);
+        }
+        .steps-list {
+            padding-left: var(--spacing-lg);
+            line-height: 2;
+        }
+        .steps-list li {
+            margin-bottom: var(--spacing-md);
+        }
+        .code-block {
+            background: var(--color-bg-secondary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-top: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+        }
+        .code-block code {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            flex: 1;
+            word-break: break-all;
         }
         @media (max-width: 768px) {
           .deadline-banner {

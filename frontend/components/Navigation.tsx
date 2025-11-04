@@ -42,7 +42,6 @@ export default function Navigation() {
         <div className="container">
           <div className="navbar-content">
             <Link href="/" className="navbar-brand">
-              <span className="brand-icon">⚡</span>
               <span className="brand-name">AfterQuery</span>
             </Link>
           </div>
@@ -56,7 +55,6 @@ export default function Navigation() {
       <div className="container">
         <div className="navbar-content">
           <Link href="/" className="navbar-brand">
-            <span className="brand-icon">⚡</span>
             <span className="brand-name">AfterQuery</span>
           </Link>
           
@@ -68,6 +66,12 @@ export default function Navigation() {
                   className={`navbar-link ${pathname?.startsWith('/admin') ? 'active' : ''}`}
                 >
                   Admin
+                </Link>
+                <Link 
+                  href="/admin/settings" 
+                  className={`navbar-link ${pathname?.startsWith('/admin/settings') ? 'active' : ''}`}
+                >
+                  Settings
                 </Link>
                 <button 
                   onClick={handleSignOut}
