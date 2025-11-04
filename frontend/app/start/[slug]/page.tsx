@@ -119,6 +119,13 @@ export default function CandidateStartPage({ params }: Props) {
             <h1>Assessment Started!</h1>
             <p className="success-message">{startResponse.message}</p>
 
+            <div className="warning-box collaborator-warning">
+              <p>
+                <strong>IMPORTANT:</strong> A GitHub collaborator invitation has been sent to the username associated with this assessment. 
+                You <strong>must accept this invitation</strong> from your email before you can clone or access the repository.
+              </p>
+            </div>
+
             <div className="repo-info-card">
               <h3>Your Repository</h3>
               <div className="repo-details">
@@ -230,6 +237,20 @@ export default function CandidateStartPage({ params }: Props) {
 
           .success-card {
             text-align: center;
+          }
+
+          .collaborator-warning {
+            background: var(--color-warning-light);
+            border: 1px solid var(--color-warning);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+            text-align: left;
+          }
+
+          .collaborator-warning p {
+            margin: 0;
+            color: var(--color-warning);
           }
 
           .success-icon {

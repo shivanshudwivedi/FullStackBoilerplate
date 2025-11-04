@@ -236,13 +236,14 @@ export default function AssessmentDetailPage({ params }: Props) {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">GitHub Username</label>
+                  <label className="form-label required">GitHub Username</label>
                   <input
                     type="text"
                     className="form-input"
                     value={inviteData.github_username}
                     onChange={(e) => setInviteData({...inviteData, github_username: e.target.value})}
                     placeholder="username"
+                    required
                   />
                 </div>
               </div>

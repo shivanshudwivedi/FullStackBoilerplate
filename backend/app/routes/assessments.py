@@ -22,7 +22,7 @@ class CreateAssessmentRequest(BaseModel):
 class InviteCandidateRequest(BaseModel):
     email: EmailStr
     name: Optional[str] = None
-    github_username: Optional[str] = None
+    github_username: str
 
 @router.post("/assessments")
 def create_assessment(req: CreateAssessmentRequest):
