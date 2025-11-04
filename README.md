@@ -1,11 +1,35 @@
 # AfterQuery Interview Platform
 
-This repository contains a full-stack technical assessment platform designed to streamline the take-home interview process. It allows administrators to create coding assessments, invite candidates, and review their submissions in a seamless, integrated environment.
-
-**Live Demo:** [Link to your Vercel deployment]
+**Live App (Demo):** https://full-stack-boilerplate-rho.vercel.app/
+**Live Backend (Demo):** https://fullstackboilerplate-production.up.railway.app
 **Demo Video:** [Link to your demo video]
 
 ---
+
+### Time & Availability
+- Hours spent on take-home: 10 hours
+- Weekly availability: 20 hours in-semester + more if project needs
+- Open to full-time: Yes
+
+### Preferred Position
+
+1. SWE Intern 
+2. TPM Intern
+(I love the mission of the company & ready to contribute in whatever manner possible)
+
+### Contact
+
+Name: Shivanshu Dwivedi
+Email: shitanshri@gmail.com
+Phone: +1-860-209-7055
+Linkedin: https://wwww.linkedin.com/in/shivanshudwivedi
+GitHub: https://wwww.github.com/shivanshudwivedi
+
+---
+
+## Description 
+
+This repository contains a full-stack technical assessment platform designed to streamline the take-home interview process. It allows administrators to create coding assessments, invite candidates, and review their submissions in a seamless, integrated environment.
 
 ## Features Implemented
 
@@ -80,7 +104,7 @@ You will need to create `.env` files for both the frontend and backend. Examples
     *   `SUPABASE_KEY`: Your Supabase service role key.
     *   `GITHUB_MACHINE_USER_TOKEN`: Your GitHub Personal Access Token.
     *   `OPENROUTER_API_KEY`: Your OpenRouter API key.
-    *   `FRONTEND_URL`: The URL of your frontend (e.g., `http://localhost:3000`).
+    *   `FRONTEND_URL`: The URL of your frontend (e.g., `http://localhost:3000` OR Deployed URL).
 
 ### 3. Set Up the Database
 
@@ -94,7 +118,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-The backend will be available at `http://localhost:8000`.
+The backend will be available at `http://localhost:8000` OR the Deployed URL.
 
 ### 5. Run the Frontend
 
@@ -104,7 +128,7 @@ npm install
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:3000`.
+The frontend will be available at `http://localhost:3000` OR the deployed URL.
 
 ---
 
