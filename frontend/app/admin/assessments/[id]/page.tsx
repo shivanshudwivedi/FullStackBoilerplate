@@ -121,12 +121,17 @@ export default function AssessmentDetailPage({ params }: Props) {
               <span className="text-muted">Created {formatDate(assessment.created_at)}</span>
             </div>
           </div>
-          <button 
-            onClick={() => setShowInviteForm(true)} 
-            className="btn btn-primary"
-          >
-            Invite Candidate
-          </button>
+          <div className="header-actions">
+            <Link href={`/admin/assessments/${assessment.id}/preview`} className="btn btn-secondary">
+              Preview
+            </Link>
+            <button 
+              onClick={() => setShowInviteForm(true)} 
+              className="btn btn-primary"
+            >
+              Invite Candidate
+            </button>
+          </div>
         </div>
 
         <div className="content-grid">
@@ -302,6 +307,11 @@ export default function AssessmentDetailPage({ params }: Props) {
         .header-meta {
           display: flex;
           align-items: center;
+          gap: var(--spacing-md);
+        }
+
+        .header-actions {
+          display: flex;
           gap: var(--spacing-md);
         }
 

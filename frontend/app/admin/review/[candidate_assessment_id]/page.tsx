@@ -5,6 +5,7 @@ import Link from 'next/link';
 import api from '../../../../lib/api';
 import { formatDate, getStatusBadgeClass, getStatusText } from '../../../../lib/utils';
 import ReactMarkdown from 'react-markdown';
+import DiffViewer from '../../../../components/DiffViewer';
 
 type Props = {
   params: { candidate_assessment_id: string };
@@ -16,6 +17,7 @@ export default function ReviewPage({ params }: Props) {
   const [error, setError] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [followUpLoading, setFollowUpLoading] = useState(false);
+  const [activeDiff, setActiveDiff] = useState<string | null>(null);
   
   const [rankScore, setRankScore] = useState(0);
   const [notes, setNotes] = useState('');
@@ -172,12 +174,26 @@ export default function ReviewPage({ params }: Props) {
                   
                   <div className="files-list">
                     {data.diff.files.map((file: any, idx: number) => (
-                      <div key={idx} className="file-item">
-                        <div className="file-name">{file.filename}</div>
-                        <div className="file-stats">
-                          <span className="stat-add">+{file.additions}</span>
-                          <span className="stat-del">-{file.deletions}</span>
-                        </div>
+                      <div key={idx} className="file-item-container">
+                        <button 
+                          onClick={() => setActiveDiff(activeDiff === file.filename ? null : file.filename)}
+                          className="file-item"
+                        >
+                          <div className="file-name">{file.filename}</div>
+                          <div className="file-stats">
+                            <span className="stat-add">+{file.additions}</span>
+                            <span className="stat-del">-{file.deletions}</span>
+                          </div>
+                        </button>
+                        {activeDiff === file.filename && (
+                          <div className="diff-content">
+                            <DiffViewer
+                              oldCode={file.previous_content || ''}
+                              newCode={file.content || ''}
+                              filename={file.filename}
+                            />
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -350,15 +366,28 @@ export default function ReviewPage({ params }: Props) {
           gap: var(--spacing-sm);
         }
 
+        .file-item-container {
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          overflow: hidden;
+        }
+
         .file-item {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: var(--spacing-sm) var(--spacing-md);
+          padding: var(--spacing-md);
           background: var(--color-bg-secondary);
-          border-radius: var(--radius-sm);
           font-family: var(--font-mono);
           font-size: 0.875rem;
+          width: 100%;
+          border: none;
+          cursor: pointer;
+          text-align: left;
+        }
+
+        .file-item:hover {
+          background: var(--color-bg-tertiary);
         }
 
         .file-name {
@@ -368,6 +397,10 @@ export default function ReviewPage({ params }: Props) {
         .file-stats {
           display: flex;
           gap: var(--spacing-sm);
+        }
+
+        .diff-content {
+          border-top: 1px solid var(--color-border);
         }
 
         .stat-add {

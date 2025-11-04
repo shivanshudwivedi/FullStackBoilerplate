@@ -212,6 +212,20 @@ class GitHubService:
             return branch_obj.commit.sha
         except GithubException as e:
             raise Exception(f"Failed to get head SHA: {e.data.get('message', str(e))}")
+
+    def get_file_content(self, repo_full_name: str, file_path: str, sha: str) -> Optional[str]:
+        """Get the content of a file at a specific commit SHA."""
+        try:
+            repo = self.client.get_repo(repo_full_name)
+            content_item = repo.get_contents(file_path, ref=sha)
+            if content_item and not isinstance(content_item, list):
+                return content_item.decoded_content.decode('utf-8')
+            return None
+        except GithubException as e:
+            # File might not exist at this SHA (e.g., it was added), which is fine
+            if e.status == 404:
+                return None
+            raise Exception(f"Failed to get file content for {file_path} at {sha}: {e.data.get('message', str(e))}")
     
     def compare_commits(self, repo_full_name: str, base_sha: str, head_sha: str) -> Dict:
         """
@@ -234,6 +248,10 @@ class GitHubService:
             
             files = []
             for file in comparison.files:
+                # Fetch full content for diff viewer
+                previous_content = self.get_file_content(repo_full_name, file.filename, base_sha)
+                content = self.get_file_content(repo_full_name, file.filename, head_sha)
+
                 files.append({
                     "filename": file.filename,
                     "status": file.status,
@@ -241,7 +259,9 @@ class GitHubService:
                     "deletions": file.deletions,
                     "changes": file.changes,
                     "patch": file.patch if hasattr(file, 'patch') else None,
-                    "blob_url": file.blob_url
+                    "blob_url": file.blob_url,
+                    "previous_content": previous_content,
+                    "content": content,
                 })
             
             return {

@@ -222,6 +222,58 @@ Please provide your evaluation in the following JSON format:
         except Exception as e:
             raise Exception(f"Failed to generate AI analysis: {str(e)}")
 
+    async def generate_code_comment(self, code_block: str, prompt: str) -> str:
+        """Generates a comment for a specific piece of code."""
+        
+        system_prompt = f"""
+You are an expert code reviewer. A user has selected a block of code and wants you to comment on it.
+The user's request is: "{prompt}"
+Analyze the following code block and provide a concise, constructive comment in Markdown format.
+Directly address the user's prompt. Do not add conversational fluff.
+"""
+        
+        user_prompt = f"""
+Here is the code block:
+```
+{code_block}
+```
+"""
+
+        try:
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                response = await client.post(
+                    f"{self.openrouter_base_url}/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {self.openrouter_api_key}",
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": "https://afterquery.com",
+                        "X-Title": "AfterQuery Assessment Platform"
+                    },
+                    json={
+                        "model": "openai/gpt-4o",
+                        "messages": [
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                        "max_tokens": 500,
+                        "temperature": 0.5,
+                        "response_format": { "type": "text" }
+                    }
+                )
+                
+                if response.status_code != 200:
+                    raise Exception(f"OpenRouter API error: {response.text}")
+                
+                result = response.json()
+                ai_response = result['choices'][0]['message']['content']
+                
+                return ai_response.strip()
+                
+        except Exception as e:
+            print(f"Error generating AI code comment: {e}")
+            raise Exception("Failed to generate AI comment")
+
+
 # Singleton instance
 ai_service = AIService()
 

@@ -152,3 +152,27 @@ def get_assessment(assessment_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/assessments/{assessment_id}/preview")
+def get_assessment_preview(assessment_id: str):
+    """
+    Get the data needed to render a preview of the candidate start page.
+    """
+    try:
+        assessment = database_service.get_assessment(assessment_id)
+        if not assessment:
+            raise HTTPException(status_code=404, detail="Assessment not found")
+
+        # Mock the data structure of the /start/{slug} endpoint
+        return {
+            "title": assessment['title'],
+            "description": assessment.get('description'),
+            "instructions_md": assessment.get('instructions_md'),
+            "start_deadline_ts": (datetime.utcnow() + timedelta(hours=assessment['start_by_hours'])).isoformat(),
+            "complete_within_hours": assessment['complete_within_hours'],
+            "status": "preview"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

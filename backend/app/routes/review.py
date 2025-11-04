@@ -23,6 +23,10 @@ class AISummaryRequest(BaseModel):
     candidate_assessment_id: str
     prompt: Optional[str] = None
 
+class AICommentRequest(BaseModel):
+    code_block: str
+    prompt: str
+
 @router.get("/review/{candidate_assessment_id}")
 def get_review_details(candidate_assessment_id: str):
     """
@@ -239,5 +243,19 @@ async def get_ai_summary(req: AISummaryRequest):
         }
     except HTTPException:
         raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/ai/generate-comment")
+async def generate_ai_comment(req: AICommentRequest):
+    """
+    Generates an AI comment for a specific block of code.
+    """
+    try:
+        comment = await ai_service.generate_code_comment(
+            code_block=req.code_block,
+            prompt=req.prompt
+        )
+        return {"comment": comment}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
