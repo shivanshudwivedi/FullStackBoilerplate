@@ -2,7 +2,7 @@
 
 - **Live App (Demo):** https://full-stack-boilerplate-rho.vercel.app/
 - **Live Backend (Demo):** https://fullstackboilerplate-production.up.railway.app
-- **Demo Video:** [Link to your demo video]
+- **Demo Video:** https://drive.google.com/file/d/1pYdsVaZ7tFIE1p3rhib4ZkdaDEWqrgIu/view?usp=sharing 
 - Use the following credentials for admin access : Email - shitanshri@gmail.com; Password: jaimatadi9
 ---
 
