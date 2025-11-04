@@ -1,21 +1,22 @@
 # AfterQuery Interview Platform
 
-**Live App (Demo):** https://full-stack-boilerplate-rho.vercel.app/
-**Live Backend (Demo):** https://fullstackboilerplate-production.up.railway.app
-**Demo Video:** [Link to your demo video]
+-- **Live App (Demo):** https://full-stack-boilerplate-rho.vercel.app/
+-- **Live Backend (Demo):** https://fullstackboilerplate-production.up.railway.app
+-- **Demo Video:** [Link to your demo video]
 
 ---
 
 ### Time & Availability
-- Hours spent on take-home: 10 hours
-- Weekly availability: 20 hours in-semester + more if project needs
-- Open to full-time: Yes
+
+-- Hours spent on take-home: 10 hours
+-- Weekly availability: 20 hours in-semester + more if project needs
+-- Open to full-time: Yes
 
 ### Preferred Position
 
-1. SWE Intern 
-2. TPM Intern
-(I love the mission of the company & ready to contribute in whatever manner possible)
+-- SWE Intern 
+-- TPM Intern
+-- (I love the mission of the company & ready to contribute in whatever manner possible)
 
 ### Contact
 
